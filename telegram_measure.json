@@ -1,0 +1,94 @@
+{
+ "ashtavakra046": {
+  "messages_scanned": 513,
+  "audio": 483,
+  "voice": 0,
+  "doc_audio": 0,
+  "audio_gb": 16.26,
+  "sample_titles": [
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 15",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 14",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 13",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 12",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 11",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 10",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 09",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 08",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 07",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 06",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 05",
+   "Es Dhammo Sanantano (एस धम्मो सनंतनो) 04"
+  ],
+  "title_overlap_checked": 473,
+  "title_matched": 390
+ },
+ "oshohindiAshtavakra": {
+  "messages_scanned": 47,
+  "audio": 45,
+  "voice": 0,
+  "doc_audio": 0,
+  "audio_gb": 1.74,
+  "sample_titles": [
+   "अष्टवक्र गीता- भाग 45/91",
+   "अष्टवक्र गीता- भाग 44/91",
+   "अष्टवक्र गीता- भाग 43/91",
+   "अष्टवक्र गीता- भाग 42/91",
+   "अष्टवक्र गीता- भाग 41/91",
+   "अष्टवक्र गीता- भाग 40/91",
+   "अष्टवक्र गीता- भाग 39/91",
+   "अष्टवक्र गीता- भाग 38/91",
+   "अष्टवक्र गीता- भाग 37/91",
+   "अष्टवक्र गीता- भाग 36/91",
+   "अष्टवक्र गीता- भाग 35/91",
+   "अष्टवक्र गीता- भाग 34/91"
+  ],
+  "title_overlap_checked": 45,
+  "title_matched": 0
+ },
+ "oshoEngTalks": {
+  "messages_scanned": 3000,
+  "audio": 1478,
+  "voice": 0,
+  "doc_audio": 761,
+  "audio_gb": 89.32,
+  "sample_titles": [
+   "A Pearl of Exceeding Beauty",
+   "Walking In Zen, Sitting In Zen #04",
+   "Reaching the Source",
+   "20 About The Vipassana Meditation.",
+   "From zero learning to learning zero",
+   "18 About The Vipassana Meditation.",
+   "We are the pilgrims of the unknowable",
+   "To Know Oneself and to Be Oneself",
+   "Osho Transmission Of The Lamp 29 24",
+   "Science has to be religious",
+   "Breath -- a bridge to the universe",
+   "The solitary lion and his tremendously beautiful roar"
+  ],
+  "title_overlap_checked": 1347,
+  "title_matched": 457
+ },
+ "oshoenglishdiscources": {
+  "messages_scanned": 3000,
+  "audio": 2995,
+  "voice": 0,
+  "doc_audio": 0,
+  "audio_gb": 108.23,
+  "sample_titles": [
+   "The Guest #15",
+   "The Guest #14",
+   "The Guest #13",
+   "The Guest #12",
+   "The Guest #11",
+   "The Guest #10",
+   "The Guest #09",
+   "The Guest #08",
+   "The Guest #07",
+   "The Guest #06",
+   "The Guest #05",
+   "The Guest #04"
+  ],
+  "title_overlap_checked": 2993,
+  "title_matched": 1779
+ }
+}

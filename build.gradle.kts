@@ -1,0 +1,16 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.gradle)
+        classpath(libs.kotlin.gradle.plugin)
+    }
+}
+
+plugins {
+    id("com.android.application") version "9.3.3" apply false
+    id("org.jetbrains.kotlin.android") version "2.4.10" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.4.10" apply false
+}
