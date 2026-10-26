@@ -30,7 +30,6 @@ Per-talk download saves audio into the app's own folder for offline listening.
 | `app/src/main/` | The Android app (Kotlin, Jetpack Compose) |
 | `app/src/main/assets/catalog.json` | Talk index used by the app |
 | `catalog.json` | Same talk index, project-root copy |
-| `item_metadata.json` | Archive.org item metadata the catalog was built from |
 | `build_catalog.py` | Script that builds `catalog.json` from the metadata |
 | `telegram_osho.json`, `telegram_measure.json` | Coverage measurements comparing Telegram audio sources with the archive |
 | `gradle/` | Version catalog + Gradle wrapper properties |
@@ -45,6 +44,9 @@ intentionally **not** in this repo:
   `gradle/wrapper/gradle-wrapper.properties`.
 - `local.properties` — machine-specific Android SDK path; create your own
   with `sdk.dir=/path/to/android-sdk`.
+- `item_metadata.json` — the raw archive metadata (~9.5 MB); omitted
+  because it exceeds this repo's upload route. The app doesn't need it:
+  `catalog.json` is the built output.
 
 The Telegram measurement scripts are also left out: they need private
 credentials to run and are not part of the app.
