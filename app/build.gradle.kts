@@ -11,8 +11,8 @@ android {
         applicationId = "com.app.oshoaudio"
         minSdk = 26
         targetSdk = 33
-        versionCode = 9
-        versionName = "8.1"
+        versionCode = 10
+        versionName = "8.2"
     }
 
     buildFeatures {
