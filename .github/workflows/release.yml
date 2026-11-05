@@ -1,0 +1,60 @@
+# Auto-release for Osho Audio.
+# Every push to main builds a fresh debug APK and publishes it as a
+# GitHub Release. Changes to this workflow file alone do not trigger
+# a release (paths-ignore below).
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '.github/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Gradle 9.6.1
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '9.6.1'
+
+      - name: Install Android SDK packages
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;37.0.0"
+
+      - name: Build debug APK
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Read app version
+        id: version
+        run: |
+          VERSION=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Rename APK
+        run: mv app/build/outputs/apk/debug/app-debug.apk "osho-audio-v${{ steps.version.outputs.version }}-${{ github.run_number }}.apk"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}-${{ github.run_number }}
+          name: Osho Audio ${{ steps.version.outputs.version }} (build ${{ github.run_number }})
+          files: osho-audio-v*.apk
+          body: |
+            Auto-built from main (${{ github.sha }}).
+            Debug build from GitHub Actions. Fresh install — if you are updating from the v8.0 release build, uninstall the old app first, as this build is signed with a different debug key.
