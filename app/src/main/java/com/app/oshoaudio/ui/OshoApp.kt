@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -58,6 +59,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -588,6 +590,8 @@ fun PlayerScreen(mod: Modifier, onBack: () -> Unit, go: (Screen) -> Unit) {
     val track = series?.tracks?.getOrNull(idx)
     var sliderPos by remember { mutableStateOf<Float?>(null) }
     var menuOpen by remember { mutableStateOf(false) }
+    var sleepDialog by remember { mutableStateOf(false) }
+    var sleepMinutes by remember { mutableStateOf(30) }
     val prefs = remember { ctx.getSharedPreferences("osho_likes", Context.MODE_PRIVATE) }
     var likedSet by remember { mutableStateOf(prefs.getStringSet("liked", emptySet()) ?: emptySet()) }
 
@@ -845,13 +849,8 @@ fun PlayerScreen(mod: Modifier, onBack: () -> Unit, go: (Screen) -> Unit) {
             PlayerPill(
                 text = sleepLabel,
                 onClick = {
-                    val next = when (PlayerState.sleepTimerMinutes) {
-                        0 -> 15
-                        15 -> 30
-                        30 -> 60
-                        else -> 0
-                    }
-                    PlayerController.sleepTimer(ctx, next)
+                    sleepMinutes = if (PlayerState.sleepTimerMinutes > 0) PlayerState.sleepTimerMinutes else 30
+                    sleepDialog = true
                 }
             )
             PlayerPill(
@@ -861,6 +860,68 @@ fun PlayerScreen(mod: Modifier, onBack: () -> Unit, go: (Screen) -> Unit) {
             PlayerIconPill(
                 active = PlayerState.repeatOne,
                 onClick = { PlayerController.repeatToggle(ctx) }
+            )
+        }
+
+        if (sleepDialog) {
+            AlertDialog(
+                onDismissRequest = { sleepDialog = false },
+                title = { Text("Sleep timer", color = Color.White, fontWeight = FontWeight.Bold) },
+                text = {
+                    Column {
+                        Text(
+                            "$sleepMinutes min",
+                            color = Color(0xFFC9A86A),
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Playback stops when the timer ends. Max 2 hours.",
+                            color = Color.Gray,
+                            fontSize = 13.sp
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Slider(
+                            value = sleepMinutes.toFloat(),
+                            onValueChange = { sleepMinutes = it.toInt().coerceIn(1, 120) },
+                            valueRange = 1f..120f,
+                            steps = 118,
+                            colors = SliderDefaults.colors(
+                                thumbColor = Color(0xFFC9A86A),
+                                activeTrackColor = Color(0xFFC9A86A)
+                            )
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            for (q in listOf(15, 30, 60, 120)) {
+                                PlayerPill(
+                                    text = "$q min",
+                                    onClick = { sleepMinutes = q }
+                                )
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        PlayerController.sleepTimer(ctx, sleepMinutes)
+                        sleepDialog = false
+                    }) { Text("Set timer", color = Color(0xFFC9A86A)) }
+                },
+                dismissButton = {
+                    Row {
+                        if (PlayerState.sleepTimerMinutes > 0) {
+                            TextButton(onClick = {
+                                PlayerController.sleepTimer(ctx, 0)
+                                sleepDialog = false
+                            }) { Text("Turn off", color = Color.Gray) }
+                        }
+                        TextButton(onClick = { sleepDialog = false }) {
+                            Text("Cancel", color = Color.Gray)
+                        }
+                    }
+                },
+                containerColor = Color(0xFF1C1C1C)
             )
         }
 
