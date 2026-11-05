@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId = "com.app.oshoaudio"
-        minSdk = 33
+        minSdk = 26
         targetSdk = 33
-        versionCode = 8
-        versionName = "8.0"
+        versionCode = 9
+        versionName = "8.1"
     }
 
     buildFeatures {
