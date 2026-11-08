@@ -22,6 +22,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -265,6 +266,75 @@ class PlayerService : Service() {
         override fun onStop() {
             stopPlayback()
             stopSelf()
+        }
+
+        /**
+         * Raw press counting — this is the fix for the reported bug.
+         *
+         * The old code never saw a double-press: Android's Bluetooth stack
+         * translates a double-press into "skip to next" and a triple-press
+         * into "skip to previous" before the app hears anything, so the
+         * session callbacks could only ever do play/pause/next/previous.
+         * That is why double-press never stopped the music and triple-press
+         * never played the next part, even though the MediaSession existed.
+         *
+         * Intercepting the raw key events here gives the user's own mapping:
+         * 1 press = play/pause, 2 presses = stop completely, 3+ = next part.
+         * KEYCODE_HEADSETHOOK is included because wired earphones (and some
+         * buds) send that instead of PLAY_PAUSE for the same button.
+         * Lock-screen / notification buttons still arrive through onPlay /
+         * onPause / onSkipToNext above, untouched.
+         */
+        private var pressCount = 0
+        private val pressRunnable = Runnable { dispatchPresses() }
+
+        private fun dispatchPresses() {
+            when {
+                pressCount <= 1 -> {
+                    // Single press: play/pause, resuming the loaded track
+                    // if the player was released after an error.
+                    val p = player
+                    if (p != null) toggle()
+                    else if (PlayerState.hasTrack) onPlay()
+                }
+                pressCount == 2 -> {
+                    stopPlayback()
+                    stopSelf()
+                }
+                else -> {
+                    series?.let { if (index + 1 < it.tracks.size) startTrack(it, index + 1) }
+                }
+            }
+            pressCount = 0
+        }
+
+        override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
+            val event = mediaButtonIntent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
+                ?: return super.onMediaButtonEvent(mediaButtonIntent)
+            if (event.action != KeyEvent.ACTION_DOWN || event.repeatCount != 0) return true
+            return when (event.keyCode) {
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY,
+                KeyEvent.KEYCODE_MEDIA_PAUSE, KeyEvent.KEYCODE_HEADSETHOOK -> {
+                    pressCount++
+                    handler.removeCallbacks(pressRunnable)
+                    handler.postDelayed(pressRunnable, 450)
+                    true
+                }
+                KeyEvent.KEYCODE_MEDIA_STOP -> {
+                    stopPlayback()
+                    stopSelf()
+                    true
+                }
+                KeyEvent.KEYCODE_MEDIA_NEXT -> {
+                    onSkipToNext()
+                    true
+                }
+                KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
+                    onSkipToPrevious()
+                    true
+                }
+                else -> super.onMediaButtonEvent(mediaButtonIntent)
+            }
         }
     }
 
@@ -637,7 +707,8 @@ class PlayerService : Service() {
                         pos, 1f
                     )
                     .setActions(
-                        PlaybackState.ACTION_PLAY_PAUSE or PlaybackState.ACTION_SKIP_TO_NEXT or
+                        PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PAUSE or
+                            PlaybackState.ACTION_PLAY_PAUSE or PlaybackState.ACTION_SKIP_TO_NEXT or
                             PlaybackState.ACTION_SKIP_TO_PREVIOUS or PlaybackState.ACTION_STOP
                     )
                     .build()
